@@ -1,0 +1,231 @@
+import React, { useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
+
+function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [apartments, setApartments] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showTenantModal, setShowTenantModal] = useState(false);
+  
+  const [newPayment, setNewPayment] = useState({ apt: '', amount: '', note: '' });
+  const [newExpense, setNewExpense] = useState({ title: '', amount: '' });
+  const [newTenant, setNewTenant] = useState({ apt: '', name: '' });
+
+  useEffect(() => {
+    let viewport = document.querySelector("meta[name=viewport]");
+    if (!viewport) {
+      viewport = document.createElement("meta");
+      viewport.name = "viewport";
+      document.head.appendChild(viewport);
+    }
+    viewport.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0";
+  }, []);
+
+  const totalIncome = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+  const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  const currentBalance = totalIncome - totalExpenses;
+
+  const handleSavePayment = (e) => {
+    e.preventDefault();
+    if (!newPayment.amount || !newPayment.apt) return;
+    const date = new Date().toLocaleDateString('he-IL');
+    setPayments([{ id: Date.now(), date, ...newPayment }, ...payments]);
+    setShowPaymentModal(false);
+    setNewPayment({ apt: '', amount: '', note: '' });
+  };
+
+  const handleSaveExpense = (e) => {
+    e.preventDefault();
+    if (!newExpense.amount || !newExpense.title) return;
+    const date = new Date().toLocaleDateString('he-IL');
+    setExpenses([{ id: Date.now(), date, ...newExpense }, ...expenses]);
+    setShowExpenseModal(false);
+    setNewExpense({ title: '', amount: '' });
+  };
+
+  const handleSaveTenant = (e) => {
+    e.preventDefault();
+    if (!newTenant.apt || !newTenant.name) return;
+    setApartments([...apartments, { id: Date.now(), ...newTenant }]);
+    setShowTenantModal(false);
+    setNewTenant({ apt: '', name: '' });
+  };
+
+  return (
+    <div style={{ backgroundColor: '#F5F5F7', minHeight: '100vh', direction: 'rtl', fontFamily: 'sans-serif', paddingBottom: '100px' }}>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .app-container { max-width: 600px; margin: 0 auto; background-color: #F5F5F7; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
+        .top-header { padding: 30px 20px 15px 20px; background: #FFF; border-bottom: 1px solid #E5E5EA; position: sticky; top: 0; z-index: 10; }
+        .top-header h1 { font-size: 24px; font-weight: 700; color: #1D1D1F; }
+        .top-header p { font-size: 14px; color: #86868B; margin-top: 2px; }
+        .content { padding: 20px; flex: 1; }
+        .balance-card { background: #FFF; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .balance-label { font-size: 13px; color: #86868B; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
+        .balance-amount { font-size: 36px; font-weight: 800; color: #1D1D1F; direction: ltr; text-align: right; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #FFF; padding: 16px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .stat-title { font-size: 12px; color: #86868B; margin-bottom: 6px; font-weight: 600; }
+        .stat-amount { font-size: 20px; font-weight: 700; direction: ltr; text-align: right; }
+        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; margin-bottom: 10px; text-align: center; }
+        .btn-primary { background: #007AFF; color: #FFF; }
+        .btn-outline { background: #FFF; color: #007AFF; border: 1px solid #007AFF; }
+        .section-title { font-size: 18px; font-weight: 700; color: #1D1D1F; margin-bottom: 14px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #FFF; padding: 16px; border-radius: 14px; margin-bottom: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
+        .item-info h4 { font-size: 15px; font-weight: 600; color: #1D1D1F; margin-bottom: 2px; }
+        .item-info p { font-size: 12px; color: #86868B; }
+        .item-val { font-size: 15px; font-weight: 700; direction: ltr; }
+        .empty-state { text-align: center; padding: 30px; color: #86868B; font-size: 14px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: flex-end; }
+        .modal-content { background: #FFF; width: 100%; max-width: 600px; margin: 0 auto; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px 20px 40px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 18px; font-weight: 700; color: #1D1D1F; }
+        .btn-close { background: #F2F2F7; border: none; width: 30px; height: 30px; border-radius: 15px; font-weight: bold; cursor: pointer; color: #86868B; }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: #86868B; margin-bottom: 6px; }
+        .form-control { width: 100%; background: #F5F5F7; border: 1px solid #E5E5EA; padding: 12px; border-radius: 10px; font-size: 15px; color: #1D1D1F; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 600px; margin: 0 auto; height: 75px; background: rgba(255,255,255,0.95); border-top: 1px solid #E5E5EA; display: flex; justify-content: space-around; align-items: center; z-index: 50; }
+        .nav-item { background: none; border: none; color: #86868B; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; width: 60px; }
+        .nav-item.active { color: #007AFF; }
+      `}</style>
+
+      <div className="app-container">
+        <div className="top-header">
+          <h1>ניהול ועד בית</h1>
+          <p>שקיפות וסדר בבניין</p>
+        </div>
+
+        <div className="content">
+          {activeTab === 'dashboard' && (
+            <div>
+              <div className="balance-card">
+                <p className="balance-label">יתרה בקופה</p>
+                <p className="balance-amount">{currentBalance.toLocaleString()} ₪</p>
+              </div>
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <p className="stat-title">הכנסות</p>
+                  <p className="stat-amount" style={{color: '#34C759'}}>{totalIncome.toLocaleString()} ₪</p>
+                </div>
+                <div className="stat-card">
+                  <p className="stat-title">הוצאות</p>
+                  <p className="stat-amount" style={{color: '#FF3B30'}}>{totalExpenses.toLocaleString()} ₪</p>
+                </div>
+              </div>
+              <button className="btn btn-primary" onClick={() => setShowPaymentModal(true)}>+ קבלת תשלום מדייר</button>
+              <button className="btn btn-outline" onClick={() => setShowExpenseModal(true)}>+ רישום הוצאת בניין</button>
+            </div>
+          )}
+
+          {activeTab === 'payments' && (
+            <div>
+              <h2 className="section-title">הכנסות אחרונות</h2>
+              {payments.length === 0 ? <div className="empty-state">אין נתונים להצגה</div> : payments.map(p => (
+                <div key={p.id} className="list-item">
+                  <div className="item-info"><h4>דירה {p.apt}</h4><p>{p.date}</p></div>
+                  <span className="item-val" style={{color: '#34C759'}}>+{p.amount} ₪</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'expenses' && (
+            <div>
+              <h2 className="section-title">הוצאות הבניין</h2>
+              {expenses.length === 0 ? <div className="empty-state">לא נרשמו הוצאות</div> : expenses.map(e => (
+                <div key={e.id} className="list-item">
+                  <div className="item-info"><h4>{e.title}</h4><p>{e.date}</p></div>
+                  <span className="item-val" style={{color: '#FF3B30'}}>-{e.amount} ₪</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'apartments' && (
+            <div>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px'}}>
+                <h2 className="section-title" style={{margin: 0}}>רשימת דיירים</h2>
+                <button style={{background: 'none', border: 'none', color: '#007AFF', fontWeight: '600', fontSize: '14px', cursor: 'pointer'}} onClick={() => setShowTenantModal(true)}>+ הוסף דייר</button>
+              </div>
+              {apartments.length === 0 ? <div className="empty-state">עדיין לא הוספת דיירים.</div> : apartments.map(apt => (
+                <div key={apt.id} className="list-item">
+                  <div className="item-info"><h4>דירה {apt.apt}</h4><p>{apt.name}</p></div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="bottom-nav">
+          <button className={`nav-item ${activeTab === 'apartments' ? 'active' : ''}`} onClick={() => setActiveTab('apartments')}>
+            <span>דיירים</span>
+          </button>
+          <button className={`nav-item ${activeTab === 'expenses' ? 'active' : ''}`} onClick={() => setActiveTab('expenses')}>
+            <span>הוצאות</span>
+          </button>
+          <button className={`nav-item ${activeTab === 'payments' ? 'active' : ''}`} onClick={() => setActiveTab('payments')}>
+            <span>הכנסות</span>
+          </button>
+          <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+            <span>ראשי</span>
+          </button>
+        </div>
+
+        {showTenantModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header"><h2>הוספת דייר חדש</h2><button className="btn-close" onClick={() => setShowTenantModal(false)}>✕</button></div>
+              <form onSubmit={handleSaveTenant}>
+                <div className="input-group"><label>מספר דירה</label><input type="text" className="form-control" value={newTenant.apt} onChange={e => setNewTenant({...newTenant, apt: e.target.value})} required /></div>
+                <div className="input-group"><label>שם המשפחה</label><input type="text" className="form-control" value={newTenant.name} onChange={e => setNewTenant({...newTenant, name: e.target.value})} required /></div>
+                <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>שמור דייר</button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showPaymentModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header"><h2>קבלת תשלום</h2><button className="btn-close" onClick={() => setShowPaymentModal(false)}>✕</button></div>
+              {apartments.length === 0 ? <div className="empty-state">אנא הוסף תחילה דיירים במסך דיירים.</div> : (
+                <form onSubmit={handleSavePayment}>
+                  <div className="input-group">
+                    <label>בחר דירה</label>
+                    <select className="form-control" value={newPayment.apt} onChange={e => setNewPayment({...newPayment, apt: e.target.value})} required>
+                      <option value="">-- בחר דירה --</option>
+                      {apartments.map(a => <option key={a.id} value={a.apt}>דירה {a.apt} ({a.name})</option>)}
+                    </select>
+                  </div>
+                  <div className="input-group"><label>סכום (₪)</label><input type="number" className="form-control" value={newPayment.amount} onChange={e => setNewPayment({...newPayment, amount: e.target.value})} required /></div>
+                  <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>שמור תשלום</button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
+        {showExpenseModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header"><h2>רישום הוצאה</h2><button className="btn-close" onClick={() => setShowExpenseModal(false)}>✕</button></div>
+              <form onSubmit={handleSaveExpense}>
+                <div className="input-group"><label>תיאור ההוצאה</label><input type="text" className="form-control" value={newExpense.title} onChange={e => setNewExpense({...newExpense, title: e.target.value})} required /></div>
+                <div className="input-group"><label>סכום (₪)</label><input type="number" className="form-control" value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: e.target.value})} required /></div>
+                <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>שמור הוצאה</button>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  createRoot(rootElement).render(<App />);
+}
