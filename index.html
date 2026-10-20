@@ -42,7 +42,7 @@
         
         /* תפריט תחתון מוגדל ונוח ללחיצה */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 600px; margin: 0 auto; height: 85px; background: rgba(255,255,255,0.98); border-top: 1px solid #E5E5EA; display: flex; justify-content: space-around; align-items: center; z-index: 50; padding-bottom: 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
-        .nav-item { background: none; border: none; color: #86868B; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 13px; font-weight: 700; flex: 1; height: 100%; }
+        .nav-item { background: none; border: none; color: #86868B; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 14px; font-weight: 700; flex: 1; height: 100%; }
         .nav-item.active { color: #007AFF; }
     </style>
 </head>
@@ -163,19 +163,15 @@
 
                     <div className="bottom-nav">
                         <button className={`nav-item ${activeTab === 'apartments' ? 'active' : ''}`} onClick={() => setActiveTab('apartments')}>
-                            <span style={{fontSize: '15px'}}>👥</span>
                             <span>דיירים</span>
                         </button>
                         <button className={`nav-item ${activeTab === 'expenses' ? 'active' : ''}`} onClick={() => setActiveTab('expenses')}>
-                            <span style={{fontSize: '15px'}}>📉</span>
                             <span>הוצאות</span>
                         </button>
                         <button className={`nav-item ${activeTab === 'payments' ? 'active' : ''}`} onClick={() => setActiveTab('payments')}>
-                            <span style={{fontSize: '15px'}}>📈</span>
                             <span>הכנסות</span>
                         </button>
                         <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
-                            <span style={{fontSize: '15px'}}>🏠</span>
                             <span>ראשי</span>
                         </button>
                     </div>
@@ -183,7 +179,7 @@
                     {showTenantModal && (
                         <div className="modal-overlay">
                             <div className="modal-content">
-                                <div className="modal-header"><h2>הוספת דייר חדש</h2><button className="btn-close" onClick={() => setShowTenantModal(false)}>✕</button></div>
+                                <div className="modal-header"><h2>הוספת דייר חדש</h2><button className="btn-close" onClick={() => setShowTenantModal(false)}>X</button></div>
                                 <form onSubmit={handleSaveTenant}>
                                     <div className="input-group"><label>מספר דירה</label><input type="text" className="form-control" value={newTenant.apt} onChange={e => setNewTenant({...newTenant, apt: e.target.value})} required /></div>
                                     <div className="input-group"><label>שם המשפחה</label><input type="text" className="form-control" value={newTenant.name} onChange={e => setNewTenant({...newTenant, name: e.target.value})} required /></div>
@@ -196,7 +192,7 @@
                     {showPaymentModal && (
                         <div className="modal-overlay">
                             <div className="modal-content">
-                                <div className="modal-header"><h2>קבלת תשלום</h2><button className="btn-close" onClick={() => setShowPaymentModal(false)}>✕</button></div>
+                                <div className="modal-header"><h2>קבלת תשלום</h2><button className="btn-close" onClick={() => setShowPaymentModal(false)}>X</button></div>
                                 {apartments.length === 0 ? <div className="empty-state">אנא הוסף תחילה דיירים במסך דיירים.</div> : (
                                     <form onSubmit={handleSavePayment}>
                                         <div className="input-group">
@@ -217,7 +213,7 @@
                     {showExpenseModal && (
                         <div className="modal-overlay">
                             <div className="modal-content">
-                                <div className="modal-header"><h2>רישום הוצאה</h2><button className="btn-close" onClick={() => setShowExpenseModal(false)}>✕</button></div>
+                                <div className="modal-header"><h2>רישום הוצאה</h2><button className="btn-close" onClick={() => setShowExpenseModal(false)}>X</button></div>
                                 <form onSubmit={handleSaveExpense}>
                                     <div className="input-group"><label>תיאור ההוצאה</label><input type="text" className="form-control" value={newExpense.title} onChange={e => setNewExpense({...newExpense, title: e.target.value})} required /></div>
                                     <div className="input-group"><label>סכום (₪)</label><input type="number" className="form-control" value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: e.target.value})} required /></div>
