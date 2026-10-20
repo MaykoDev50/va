@@ -8,42 +8,338 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #F5F5F7; color: #1D1D1F; }
-        .app-container { max-width: 600px; margin: 0 auto; background-color: #F5F5F7; min-height: 100vh; position: relative; display: flex; flex-direction: column; padding-bottom: 110px; }
-        .top-header { padding: 30px 20px 15px 20px; background: #FFF; border-bottom: 1px solid #E5E5EA; position: sticky; top: 0; z-index: 10; }
-        .top-header h1 { font-size: 24px; font-weight: 700; color: #1D1D1F; }
-        .top-header p { font-size: 14px; color: #86868B; margin-top: 2px; }
-        .content { padding: 20px; flex: 1; }
-        .balance-card { background: #FFF; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .balance-label { font-size: 13px; color: #86868B; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
-        .balance-amount { font-size: 36px; font-weight: 800; color: #1D1D1F; direction: ltr; text-align: right; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: #FFF; padding: 16px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .stat-title { font-size: 12px; color: #86868B; margin-bottom: 6px; font-weight: 600; }
-        .stat-amount { font-size: 20px; font-weight: 700; direction: ltr; text-align: right; }
-        .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; margin-bottom: 10px; text-align: center; }
-        .btn-primary { background: #007AFF; color: #FFF; }
-        .btn-outline { background: #FFF; color: #007AFF; border: 1px solid #007AFF; }
-        .section-title { font-size: 18px; font-weight: 700; color: #1D1D1F; margin-bottom: 14px; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; background: #FFF; padding: 16px; border-radius: 14px; margin-bottom: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.02); }
-        .item-info h4 { font-size: 15px; font-weight: 600; color: #1D1D1F; margin-bottom: 2px; }
-        .item-info p { font-size: 12px; color: #86868B; }
-        .item-val { font-size: 15px; font-weight: 700; direction: ltr; }
-        .empty-state { text-align: center; padding: 30px; color: #86868B; font-size: 14px; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: flex-end; }
-        .modal-content { background: #FFF; width: 100%; max-width: 600px; margin: 0 auto; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px 20px 40px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h2 { font-size: 18px; font-weight: 700; color: #1D1D1F; }
-        .btn-close { background: #F2F2F7; border: none; width: 30px; height: 30px; border-radius: 15px; font-weight: bold; cursor: pointer; color: #86868B; }
-        .input-group { margin-bottom: 14px; }
-        .input-group label { display: block; font-size: 12px; font-weight: 600; color: #86868B; margin-bottom: 6px; }
-        .form-control { width: 100%; background: #F5F5F7; border: 1px solid #E5E5EA; padding: 12px; border-radius: 10px; font-size: 15px; color: #1D1D1F; }
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Heebo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* תפריט תחתון מוגדל ונוח ללחיצה */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 600px; margin: 0 auto; height: 85px; background: rgba(255,255,255,0.98); border-top: 1px solid #E5E5EA; display: flex; justify-content: space-around; align-items: center; z-index: 50; padding-bottom: 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
-        .nav-item { background: none; border: none; color: #86868B; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 14px; font-weight: 700; flex: 1; height: 100%; }
-        .nav-item.active { color: #007AFF; }
+        body { 
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); 
+            color: #102a43; 
+            min-height: 100vh;
+        }
+
+        .app-container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background-color: #f8fafc; 
+            min-height: 100vh; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            padding-bottom: 110px; 
+            box-shadow: 0 0 40px rgba(0,0,0,0.08);
+        }
+
+        .top-header { 
+            padding: 28px 24px 20px 24px; 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+        }
+
+        .top-header h1 { 
+            font-size: 26px; 
+            font-weight: 800; 
+            color: #0f172a; 
+            letter-spacing: -0.5px;
+        }
+
+        .top-header p { 
+            font-size: 14px; 
+            color: #64748b; 
+            margin-top: 4px; 
+            font-weight: 500;
+        }
+
+        .content { 
+            padding: 24px; 
+            flex: 1; 
+        }
+
+        .balance-card { 
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); 
+            border-radius: 24px; 
+            padding: 28px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .balance-label { 
+            font-size: 13px; 
+            color: #bae6fd; 
+            margin-bottom: 8px; 
+            text-transform: uppercase; 
+            font-weight: 600; 
+            letter-spacing: 0.5px;
+        }
+
+        .balance-amount { 
+            font-size: 40px; 
+            font-weight: 800; 
+            direction: ltr; 
+            text-align: right; 
+            letter-spacing: -1px;
+        }
+
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 16px; 
+            margin-bottom: 24px; 
+        }
+
+        .stat-card { 
+            background: #ffffff; 
+            padding: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+            border: 1px solid #f1f5f9;
+            transition: transform 0.2s;
+        }
+
+        .stat-title { 
+            font-size: 13px; 
+            color: #64748b; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+        }
+
+        .stat-amount { 
+            font-size: 22px; 
+            font-weight: 700; 
+            direction: ltr; 
+            text-align: right; 
+        }
+
+        .btn { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 16px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border: none; 
+            margin-bottom: 12px; 
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary { 
+            background: #0284c7; 
+            color: #FFF; 
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.3);
+        }
+
+        .btn-outline { 
+            background: #ffffff; 
+            color: #0284c7; 
+            border: 2px solid #e0f2fe; 
+        }
+
+        .section-title { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: #0f172a; 
+            margin-bottom: 16px; 
+        }
+
+        .list-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #ffffff; 
+            padding: 18px 20px; 
+            border-radius: 18px; 
+            margin-bottom: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02); 
+            border: 1px solid #f1f5f9;
+        }
+
+        .item-info h4 { 
+            font-size: 16px; 
+            font-weight: 600; 
+            color: #0f172a; 
+            margin-bottom: 3px; 
+        }
+
+        .item-info p { 
+            font-size: 13px; 
+            color: #64748b; 
+        }
+
+        .item-val { 
+            font-size: 16px; 
+            font-weight: 700; 
+            direction: ltr; 
+        }
+
+        .empty-state { 
+            text-align: center; 
+            padding: 40px 20px; 
+            color: #94a3b8; 
+            font-size: 15px; 
+            background: #ffffff;
+            border-radius: 20px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(15, 23, 42, 0.5); 
+            backdrop-filter: blur(5px);
+            z-index: 100; 
+            display: flex; 
+            align-items: flex-end; 
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content { 
+            background: #ffffff; 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            border-top-left-radius: 28px; 
+            border-top-right-radius: 28px; 
+            padding: 28px 24px 44px; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 24px; 
+        }
+
+        .modal-header h2 { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: #0f172a; 
+        }
+
+        .btn-close { 
+            background: #f1f5f9; 
+            border: none; 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            font-weight: bold; 
+            cursor: pointer; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .input-group { 
+            margin-bottom: 18px; 
+        }
+
+        .input-group label { 
+            display: block; 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: #475569; 
+            margin-bottom: 8px; 
+        }
+
+        .form-control { 
+            width: 100%; 
+            background: #f8fafc; 
+            border: 1.5px solid #cbd5e1; 
+            padding: 14px 16px; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            color: #0f172a; 
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #0284c7;
+            background: #ffffff;
+        }
+
+        /* תפריט תחתון מעוצב מוגדל ונוח */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            height: 85px; 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(15px);
+            border-top: 1px solid #e2e8f0; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            z-index: 50; 
+            padding-bottom: 10px; 
+            box-shadow: 0 -6px 20px rgba(0,0,0,0.05); 
+        }
+
+        .nav-item { 
+            background: none; 
+            border: none; 
+            color: #94a3b8; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            font-size: 14px; 
+            font-weight: 700; 
+            flex: 1; 
+            height: 100%; 
+            transition: color 0.2s;
+        }
+
+        .nav-item.active { 
+            color: #0284c7; 
+        }
     </style>
 </head>
 <body>
@@ -110,11 +406,11 @@
                                 <div className="stats-grid">
                                     <div className="stat-card">
                                         <p className="stat-title">הכנסות</p>
-                                        <p className="stat-amount" style={{color: '#34C759'}}>{totalIncome.toLocaleString()} ₪</p>
+                                        <p className="stat-amount" style={{color: '#16a34a'}}>{totalIncome.toLocaleString()} ₪</p>
                                     </div>
                                     <div className="stat-card">
                                         <p className="stat-title">הוצאות</p>
-                                        <p className="stat-amount" style={{color: '#FF3B30'}}>{totalExpenses.toLocaleString()} ₪</p>
+                                        <p className="stat-amount" style={{color: '#dc2626'}}>{totalExpenses.toLocaleString()} ₪</p>
                                     </div>
                                 </div>
                                 <button className="btn btn-primary" onClick={() => setShowPaymentModal(true)}>+ קבלת תשלום מדייר</button>
@@ -128,7 +424,7 @@
                                 {payments.length === 0 ? <div className="empty-state">אין נתונים להצגה</div> : payments.map(p => (
                                     <div key={p.id} className="list-item">
                                         <div className="item-info"><h4>דירה {p.apt}</h4><p>{p.date}</p></div>
-                                        <span className="item-val" style={{color: '#34C759'}}>+{p.amount} ₪</span>
+                                        <span className="item-val" style={{color: '#16a34a'}}>+{p.amount} ₪</span>
                                     </div>
                                 ))}
                             </div>
@@ -140,7 +436,7 @@
                                 {expenses.length === 0 ? <div className="empty-state">לא נרשמו הוצאות</div> : expenses.map(e => (
                                     <div key={e.id} className="list-item">
                                         <div className="item-info"><h4>{e.title}</h4><p>{e.date}</p></div>
-                                        <span className="item-val" style={{color: '#FF3B30'}}>-{e.amount} ₪</span>
+                                        <span className="item-val" style={{color: '#dc2626'}}>-{e.amount} ₪</span>
                                     </div>
                                 ))}
                             </div>
@@ -148,9 +444,9 @@
 
                         {activeTab === 'apartments' && (
                             <div>
-                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px'}}>
+                                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
                                     <h2 className="section-title" style={{margin: 0}}>רשימת דיירים</h2>
-                                    <button style={{background: 'none', border: 'none', color: '#007AFF', fontWeight: '600', fontSize: '14px', cursor: 'pointer'}} onClick={() => setShowTenantModal(true)}>+ הוסף דייר</button>
+                                    <button style={{background: 'none', border: 'none', color: '#0284c7', fontWeight: '700', fontSize: '15px', cursor: 'pointer'}} onClick={() => setShowTenantModal(true)}>+ הוסף דייר</button>
                                 </div>
                                 {apartments.length === 0 ? <div className="empty-state">עדיין לא הוספת דיירים.</div> : apartments.map(apt => (
                                     <div key={apt.id} className="list-item">
@@ -177,22 +473,22 @@
                     </div>
 
                     {showTenantModal && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <div className="modal-header"><h2>הוספת דייר חדש</h2><button className="btn-close" onClick={() => setShowTenantModal(false)}>X</button></div>
+                        <div className="modal-overlay" onClick={() => setShowTenantModal(false)}>
+                            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                                <div className="modal-header"><h2>הוספת דייר חדש</h2><button className="btn-close" onClick={() => setShowTenantModal(false)}>✕</button></div>
                                 <form onSubmit={handleSaveTenant}>
                                     <div className="input-group"><label>מספר דירה</label><input type="text" className="form-control" value={newTenant.apt} onChange={e => setNewTenant({...newTenant, apt: e.target.value})} required /></div>
                                     <div className="input-group"><label>שם המשפחה</label><input type="text" className="form-control" value={newTenant.name} onChange={e => setNewTenant({...newTenant, name: e.target.value})} required /></div>
-                                    <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>שמור דייר</button>
+                                    <button type="submit" className="btn btn-primary" style={{marginTop: '10px'}}>שמור דייר</button>
                                 </form>
                             </div>
                         </div>
                     )}
 
                     {showPaymentModal && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <div className="modal-header"><h2>קבלת תשלום</h2><button className="btn-close" onClick={() => setShowPaymentModal(false)}>X</button></div>
+                        <div className="modal-overlay" onClick={() => setShowPaymentModal(false)}>
+                            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                                <div className="modal-header"><h2>קבלת תשלום</h2><button className="btn-close" onClick={() => setShowPaymentModal(false)}>✕</button></div>
                                 {apartments.length === 0 ? <div className="empty-state">אנא הוסף תחילה דיירים במסך דיירים.</div> : (
                                     <form onSubmit={handleSavePayment}>
                                         <div className="input-group">
@@ -203,7 +499,7 @@
                                             </select>
                                         </div>
                                         <div className="input-group"><label>סכום (₪)</label><input type="number" className="form-control" value={newPayment.amount} onChange={e => setNewPayment({...newPayment, amount: e.target.value})} required /></div>
-                                        <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>שמור תשלום</button>
+                                        <button type="submit" className="btn btn-primary" style={{marginTop: '10px'}}>שמור תשלום</button>
                                     </form>
                                 )}
                             </div>
@@ -211,13 +507,13 @@
                     )}
 
                     {showExpenseModal && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <div className="modal-header"><h2>רישום הוצאה</h2><button className="btn-close" onClick={() => setShowExpenseModal(false)}>X</button></div>
+                        <div className="modal-overlay" onClick={() => setShowExpenseModal(false)}>
+                            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                                <div className="modal-header"><h2>רישום הוצאה</h2><button className="btn-close" onClick={() => setShowExpenseModal(false)}>✕</button></div>
                                 <form onSubmit={handleSaveExpense}>
                                     <div className="input-group"><label>תיאור ההוצאה</label><input type="text" className="form-control" value={newExpense.title} onChange={e => setNewExpense({...newExpense, title: e.target.value})} required /></div>
                                     <div className="input-group"><label>סכום (₪)</label><input type="number" className="form-control" value={newExpense.amount} onChange={e => setNewExpense({...newExpense, amount: e.target.value})} required /></div>
-                                    <button type="submit" className="btn btn-primary" style={{marginTop: '15px'}}>שמור הוצאה</button>
+                                    <button type="submit" className="btn btn-primary" style={{marginTop: '10px'}}>שמור הוצאה</button>
                                 </form>
                             </div>
                         </div>
